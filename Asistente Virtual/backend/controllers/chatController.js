@@ -1,7 +1,7 @@
 const openai = require('../config/openaiConfig');
 
 const handleChat = async (req, res) => {
-  const { message, context } = req.body; // Ahora recibimos también el contexto
+  const { message, context } = req.body; 
 
   if (!message || typeof message !== 'string' || message.trim() === '') {
     return res.status(400).json({ error: 'Mensaje no proporcionado o inválido' });
@@ -16,8 +16,8 @@ const handleChat = async (req, res) => {
 
     const openaiMessages = [
       { role: 'system', content: 'Eres un asistente virtual útil y amigable.' },
-      ...context, // Incluye el contexto proporcionado
-      { role: 'user', content: message }, // Agrega el mensaje actual
+      ...context,
+      { role: 'user', content: message },
     ];
 
     const response = await openai.chat.completions.create({

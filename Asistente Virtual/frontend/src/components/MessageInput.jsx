@@ -3,39 +3,39 @@ import SendIcon from '@mui/icons-material/Send';
 import UploadIcon from '@mui/icons-material/Upload';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import KeyboardVoiceIcon from '@mui/icons-material/KeyboardVoice';
-import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { useSpeechRecognition } from '../hooks/usespeechRecognition';
 
 const MessageInput = ({
   onSendMessage,
   onGenerateImage,
   onUploadImage,
-  setMessages, // Recibe desde el componente padre
 }) => {
   const [inputValue, setInputValue] = useState('');
 
+  // Callback que maneja la transcripción
   const handleVoiceResult = (transcript) => {
-    setInputValue(''); // Limpia el input después de procesar la transcripción
-    onSendMessage(transcript);
+    setInputValue((prev) => `${prev} ${transcript}`.trim()); // Agregar transcripción al input
   };
 
-  const { isListening, startListening, stopListening } = useSpeechRecognition(handleVoiceResult);
+  // Hook para manejar reconocimiento de voz
+  const { isTranscribing } = useSpeechRecognition(handleVoiceResult);
 
   const handleInputChange = (event) => {
-    setInputValue(event.target.value);
+    setInputValue(event.target.value); // Actualizar el valor del input
   };
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
     if (inputValue.trim()) {
-      onSendMessage(inputValue);
-      setInputValue('');
+      onSendMessage(inputValue); // Enviar mensaje
+      setInputValue(''); // Limpiar el input
     }
   };
 
   const handleGenerateImageClick = () => {
     if (inputValue.trim()) {
-      onGenerateImage(inputValue);
-      setInputValue('');
+      onGenerateImage(inputValue); // Generar imagen
+      setInputValue(''); // Limpiar el input
     } else {
       alert('Por favor, escribe un prompt para generar una imagen.');
     }
@@ -44,17 +44,7 @@ const MessageInput = ({
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      onUploadImage(file);
-    }
-  };
-
-  const handleVoiceButtonClick = () => {
-    if (isListening) {
-      stopListening();
-      setMessages((prev) => prev.filter((msg) => msg.text !== 'Escuchando...')); // Limpia "Escuchando..."
-    } else {
-      setMessages((prev) => [...prev, { sender: 'assistant', text: 'Escuchando...' }]); // Añade "Escuchando..."
-      startListening();
+      onUploadImage(file); // Subir imagen
     }
   };
 
@@ -63,10 +53,9 @@ const MessageInput = ({
       {/* Botón de Reconocimiento de Voz */}
       <button
         className={`text-white px-3 py-1 rounded-full hover:bg-blue-900 ${
-          isListening ? 'bg-green-500' : ''
+          isTranscribing ? 'bg-green-500' : ''
         }`}
-        onClick={handleVoiceButtonClick}
-        title="Haz clic para empezar o detener el reconocimiento de voz"
+        title={isTranscribing ? 'Transcribiendo...' : 'Esperando activación'}
       >
         <KeyboardVoiceIcon style={{ color: 'white' }} />
       </button>

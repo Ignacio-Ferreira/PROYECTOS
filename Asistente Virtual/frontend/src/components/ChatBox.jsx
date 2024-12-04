@@ -13,14 +13,12 @@ const ChatBox = ({ messages = [], loading }) => {
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && lastMessage.sender === 'assistant' && lastMessage.text) {
-      // Añadir un retraso de un segundo antes de que la asistente comience a hablar
       const timeoutId = setTimeout(() => {
         const utterance = new SpeechSynthesisUtterance(lastMessage.text);
         utterance.lang = 'es-ES';
         window.speechSynthesis.speak(utterance);
-      }, 1000); // 1000 ms = 1 segundo
+      }, 1000);
 
-      // Limpieza para evitar problemas de memoria si el componente se desmonta
       return () => clearTimeout(timeoutId);
     }
   }, [messages]);
